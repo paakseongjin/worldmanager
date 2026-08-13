@@ -1,0 +1,16 @@
+---
+description: "Accessibility baseline (WCAG 2.2). Apply for interactive UI."
+globs:
+  - "**/*.{tsx,jsx,vue,svelte,html}"
+  - "**/components/**/*"
+alwaysApply: false
+---
+
+# Accessibility
+
+- Semantic HTML, keyboard use, visible focus, contrast, alt text, clear errors by default.
+- Reference WCAG 2.2; adapt only for real user/device constraints.
+- Clickable ⇒ keyboard operable; manage focus in dialogs/menus.
+- Do not convey state by color alone; keep responsive operability.
+
+Korean rationale: `docs/design/accessibility.md`

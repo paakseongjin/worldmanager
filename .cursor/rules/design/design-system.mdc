@@ -1,0 +1,18 @@
+---
+description: "Design system first. Apply for UI components and styles."
+globs:
+  - "**/*.{tsx,jsx,vue,svelte,css,scss}"
+  - "**/components/**/*"
+  - "**/app/**/*.{tsx,jsx,css}"
+alwaysApply: false
+---
+
+# Design System
+
+- Build UI from shared tokens/components, not one-off page styles.
+- Tokenize color, type, space, radius, elevation, motion, state.
+- Reuse buttons/inputs/modals/tables/alerts; minimize arbitrary colors and meaningless class names.
+- Same semantics → same component/language/color meaning across screens.
+- Keep design docs current; update CODEMAP when the system changes.
+
+Korean rationale: `docs/design/design-system.md`

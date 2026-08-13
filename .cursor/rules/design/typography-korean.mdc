@@ -1,0 +1,17 @@
+---
+description: "Typography including Korean layout. Apply for UI text and type tokens."
+globs:
+  - "**/*.{tsx,jsx,css,scss}"
+  - "**/TYPEGUIDE*"
+  - "**/components/**/*"
+alwaysApply: false
+---
+
+# Typography (incl. Korean)
+
+- Single source: `TYPEGUIDE.md` / design docs; sizes/line-height/weight via tokens.
+- Keep KR+EN mixed layouts readable; consistent title/body/caption/label scale.
+- Do not break layout on wrapping/ellipsis/long Korean strings.
+- Changing type tokens requires checking key screens + docs.
+
+Korean rationale: `docs/design/typography-korean.md`

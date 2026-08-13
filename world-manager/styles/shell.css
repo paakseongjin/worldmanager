@@ -1,0 +1,261 @@
+/* shell.css — 앱 껍데기 (헤더 · 검색) */
+/* 화면 높이에 고정. 휠은 .board-main 등 안쪽에서만 움직임 */
+#app-root {
+  height: 100%;
+}
+
+.app {
+  box-sizing: border-box;
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100%;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--page, var(--canvas, #f2f4f7));
+  color: var(--foreground, #1f2933);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.top {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 auto;
+  min-height: var(--header-min-h, 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-4);
+  padding: var(--space-3) var(--page-pad-x);
+  padding-top: max(var(--space-3), env(safe-area-inset-top));
+  border-bottom: var(--line, 1px solid var(--border));
+  background: var(--canvas, #f7f8fa);
+}
+
+.logo {
+  margin: 0;
+  font-size: var(--text-logo);
+  font-weight: 600;
+  line-height: var(--lh-logo);
+  color: var(--foreground);
+  text-wrap: balance;
+}
+
+.logo-sub {
+  margin: var(--space-1) 0 0;
+  color: var(--body);
+  font-size: var(--text-small);
+  line-height: var(--lh-small);
+  max-width: 36rem;
+  text-wrap: pretty;
+}
+
+.top-right {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.btn-icon {
+  width: var(--btn-h, 32px);
+  min-width: var(--btn-h, 32px);
+  padding: 0;
+  position: relative;
+}
+
+.btn-icon svg {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  flex-shrink: 0;
+}
+
+#btnTheme {
+  min-width: var(--btn-h, 32px);
+}
+
+/* 아이콘 버튼 호버 시 한글 이름 작은 안내 */
+.top-right .btn-icon[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 40;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--foreground);
+  color: var(--canvas);
+  font-size: calc(12px * var(--wm-type-scale));
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-2px);
+  transition:
+    opacity var(--dur-fast, 120ms) var(--ease-out, ease),
+    transform var(--dur-fast, 120ms) var(--ease-out, ease),
+    visibility var(--dur-fast, 120ms);
+}
+
+.top-right .btn-icon[data-tip]:hover::after,
+.top-right .btn-icon[data-tip]:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 메뉴를 누르면 헤더 한 줄에서 왼쪽으로 펼침 (아래 드롭다운 아님) */
+.top-menu {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.top-menu > summary {
+  list-style: none;
+  user-select: none;
+  flex: 0 0 auto;
+}
+
+.top-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.top-menu-label-closed,
+.top-menu-label-open {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.top-menu:not([open]) > summary .top-menu-label-closed {
+  display: inline-flex;
+}
+
+.top-menu[open] > summary .top-menu-label-open {
+  display: inline-flex;
+}
+
+.top-menu > summary.btn-icon {
+  width: var(--btn-h, 32px);
+  min-width: var(--btn-h, 32px);
+  padding: 0;
+}
+
+.top-menu[open] > summary {
+  background: color-mix(in srgb, var(--primary) 18%, var(--surface));
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  color: var(--primary-hover);
+}
+
+.top-menu-panel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* 펼친 메뉴 항목 — 헤더 일반 버튼과 다른 톤 */
+.top-menu[open] .top-menu-panel .btn {
+  background: color-mix(in srgb, var(--primary) 14%, var(--canvas));
+  border-color: color-mix(in srgb, var(--primary) 38%, var(--border));
+  color: var(--primary-hover);
+}
+
+.top-menu[open] .top-menu-panel .btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 24%, var(--canvas));
+  border-color: var(--primary);
+}
+
+/* 피커 폼 상세는 board.css .is-picker 쪽 — 여기서는 공통만 */
+.picker-form .field {
+  min-width: 0;
+  width: 100%;
+}
+
+.field-inline input {
+  width: min(240px, 42vw);
+  /* 헤더 버튼(--btn-h)과 높이 맞춤 */
+  height: var(--btn-h, 32px);
+  min-height: var(--btn-h, 32px);
+  padding: 0 var(--control-pad-x);
+  border: var(--line, 1px solid var(--border));
+  border-radius: var(--radius-pill);
+  background: var(--canvas);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-small);
+  box-sizing: border-box;
+}
+
+.field-inline input:focus,
+.field-inline input:focus-visible {
+  outline: none;
+  border: var(--line-w, 1px) solid var(--focus-border);
+  box-shadow: none;
+}
+
+/* 아래 알림 — 방금 한 일과 개수를 바로 보여 줌 */
+.status {
+  flex: 0 0 auto;
+  min-height: var(--status-h, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--page-pad-x);
+  padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  border-top: var(--line);
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: var(--text-small);
+  line-height: var(--lh-small);
+}
+
+.status > span {
+  min-width: 0;
+}
+
+#statusText {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+#statsText {
+  flex: 1 1 auto;
+  color: var(--body);
+  text-align: right;
+  text-wrap: pretty;
+}
+
+#statusText.is-fresh {
+  animation: wm-status-flash 1.2s ease;
+}
+
+@keyframes wm-status-flash {
+  from {
+    background: var(--weak-bg);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #statusText.is-fresh {
+    animation: none;
+  }
+}

@@ -1,0 +1,38 @@
+﻿# 의존성 및 빌드 결과물
+node_modules/
+.next/
+dist/
+build/
+out/
+coverage/
+
+# 버전 관리 및 캐시
+.git/
+.cache/
+.turbo/
+.vercel/
+.code-review-graph/
+
+# 외부 도구 클론(용량 큼)
+tools/im-not-ai/
+tools/code-review-graph-src/
+
+# 환경변수 및 민감 정보
+.env
+.env.*
+!.env.example
+
+# 로그 및 임시 파일
+*.log
+tmp/
+temp/
+.DS_Store
+
+# 큰 파일/아카이브
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+tools/novelWriter/

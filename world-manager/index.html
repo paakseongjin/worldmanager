@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- 자산 버전: bundle-world-manager-css.py 가 내용 해시로 자동 갱신 -->
+  <meta name="wm-asset-v" content="86664b69" />
+  <title>World Manager</title>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("worldmanager-theme");
+        if (t !== "light" && t !== "dark") {
+          t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=86664b69" />
+</head>
+<body>
+  <div id="app-root"></div>
+
+  <script src="js/seed-data.js?v=86664b69"></script>
+  <script src="js/constants.js?v=86664b69"></script>
+  <script src="js/theme.js?v=86664b69"></script>
+  <script src="js/store.js?v=86664b69"></script>
+  <script src="js/store-maps.js?v=86664b69"></script>
+  <script src="js/store-query.js?v=86664b69"></script>
+  <script src="js/templates/shell.js?v=86664b69"></script>
+  <script src="js/views/module-rail.js?v=86664b69"></script>
+  <script src="js/views/board.js?v=86664b69"></script>
+  <script src="js/views/board-identity.js?v=86664b69"></script>
+  <script src="js/views/module-page.js?v=86664b69"></script>
+  <script src="js/views/world-map.js?v=86664b69"></script>
+  <script src="js/views/world-picker.js?v=86664b69"></script>
+  <script src="js/actions/nodes.js?v=86664b69"></script>
+  <script src="js/actions/backup.js?v=86664b69"></script>
+  <script src="js/main.js?v=86664b69"></script>
+</body>
+</html>

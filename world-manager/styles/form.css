@@ -1,0 +1,236 @@
+/* form.css — 폼 · 버튼 (크기 통일, 역할별 색·선) */
+.form .field,
+.id-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--body);
+  font-size: var(--text-small);
+  line-height: var(--lh-small);
+  min-width: 0;
+}
+
+.field-label-text,
+.id-form .field > span:first-child,
+.form .field > span:first-child {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: var(--line, 1px solid var(--border));
+  border-radius: var(--control-radius, var(--radius-md));
+  background-color: var(--canvas);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-small);
+  line-height: var(--lh-small);
+}
+
+.field input,
+.field select {
+  height: var(--control-h, var(--row-h));
+  min-height: var(--control-h, var(--row-h));
+  padding: 0 var(--control-pad-x, 12px);
+}
+
+/* 검색창은 알약 형태 (일반 입력 모서리보다 우선) */
+.field input[type="search"],
+input[type="search"] {
+  border-radius: var(--radius-pill);
+}
+
+/* 드롭다운: 시스템 화살표 제거 → 패딩·아이콘 위치 통일 */
+.field select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: var(--control-pad-end, 40px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'%3E%3Cpath stroke='%237b8794' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1.5 1.75L6 6.25L10.5 1.75'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: var(--control-chevron-size, 12px) 8px;
+  cursor: pointer;
+}
+
+[data-theme="dark"] .field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'%3E%3Cpath stroke='%239aa4b2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1.5 1.75L6 6.25L10.5 1.75'/%3E%3C/svg%3E");
+}
+
+.field textarea {
+  min-height: calc(140px * var(--wm-type-scale));
+  padding: var(--space-lg);
+  resize: vertical;
+  line-height: var(--lh-body);
+}
+
+.field input:disabled,
+.field select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: var(--surface);
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: none;
+  border: var(--line-w, 1px) solid var(--focus-border);
+  box-shadow: none;
+}
+
+.field-help,
+.field-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: calc(12px * var(--wm-type-scale));
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.field-hint {
+  margin-top: 2px;
+}
+
+/* ——— 공통 버튼: 높이·모서리·선 두께 통일, 역할만 색으로 구분 ——— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  box-sizing: border-box;
+  height: var(--btn-h, 32px);
+  min-height: var(--btn-h, 32px);
+  min-width: 0;
+  padding: 0 var(--btn-pad-x, 12px);
+  border: var(--line-w, 1px) solid transparent;
+  border-radius: var(--btn-radius, var(--radius-md));
+  cursor: pointer;
+  font-family: inherit;
+  font-size: calc(13px * var(--wm-type-scale));
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn:focus,
+.btn:focus-visible {
+  outline: none;
+  border: var(--line-w, 1px) solid var(--focus-border);
+  box-shadow: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(var(--press-scale, 0.97));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* 주요 행동 — 채움 */
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* 보조·도구 — 옅은 배경 */
+.btn-weak {
+  background: var(--weak-bg);
+  color: var(--weak-fg);
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+}
+
+.btn-weak:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--weak-bg) 70%, var(--surface));
+}
+
+/* 일반 보조 — 테두리만 */
+.btn-outline {
+  background: var(--canvas);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--muted);
+}
+
+/* 고치기 등 — 파란 테두리 */
+.btn-outline-primary {
+  background: var(--canvas);
+  color: var(--weak-fg);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+  background: var(--weak-bg);
+}
+
+/* 지우기 — 빨간 테두리 (채움 없이 형태 통일) */
+.btn-outline-danger,
+.btn-danger {
+  background: var(--canvas);
+  color: var(--danger);
+  border-color: var(--danger-line);
+}
+
+.btn-outline-danger:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-bg);
+}
+
+/* 작은 버튼 */
+.btn-sm {
+  height: var(--btn-h-sm, 28px);
+  min-height: var(--btn-h-sm, 28px);
+  min-width: 0;
+  padding: 0 var(--btn-pad-x-sm, 8px);
+  border-radius: var(--btn-radius, var(--radius-md));
+  font-size: calc(12px * var(--wm-type-scale));
+}
+
+.btn-sm.btn-primary {
+  min-width: 0;
+}
+
+.btn-xs {
+  height: var(--btn-h-sm, 28px);
+  min-height: var(--btn-h-sm, 28px);
+  min-width: 0;
+  padding: 0 var(--btn-pad-x-sm, 8px);
+  border-radius: var(--btn-radius, var(--radius-md));
+  font-size: calc(12px * var(--wm-type-scale));
+  flex: 0 0 auto;
+}
+
+.btn-xs.btn-danger,
+.btn-xs.btn-outline-danger {
+  height: var(--btn-h-sm, 28px);
+  min-height: var(--btn-h-sm, 28px);
+}

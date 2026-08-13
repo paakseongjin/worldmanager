@@ -1,0 +1,99 @@
+/* base.css — World Manager */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 포커스 가능 요소: 기존 1px 선만 primary. 두 번째 고리 금지 */
+:where(a, button, input, textarea, select, summary, [tabindex]:not([tabindex="-1"])):focus {
+  outline: none;
+}
+:where(a, button, input, textarea, select, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: none;
+  border: var(--line-w, 1px) solid var(--focus-border);
+  box-shadow: none;
+}
+
+input[type="search"] {
+  appearance: none;
+  border-radius: var(--radius-pill);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* 테마 전환 때 스크롤바 유무로 가로폭이 흔들리지 않게 */
+  scrollbar-gutter: stable;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  min-height: 100%;
+  background: var(--page, var(--canvas));
+  color: var(--foreground);
+  font-family: var(--font);
+  font-size: var(--text-body);
+  line-height: var(--lh-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+}
+
+/* 세로 쌓기 공통 — 본문 폭 보강은 layout.css */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-gap, var(--space-5));
+}
+
+h1,
+.h-sec {
+  text-wrap: balance;
+}
+
+.help,
+.lead,
+p {
+  text-wrap: pretty;
+}
+
+/* display:flex 버튼이 hidden을 덮어쓰지 않게 */
+[hidden] {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 100;
+  height: var(--row-h);
+  padding: 0 var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-btn-md);
+}
+
+.skip-link:focus {
+  left: var(--space-2);
+  top: var(--space-2);
+  outline: none;
+  border: var(--line-w, 1px) solid var(--focus-border);
+}

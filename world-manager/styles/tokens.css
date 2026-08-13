@@ -1,0 +1,217 @@
+/* tokens.css — 8pt 그리드 · WCAG 터치 · HIG/Material 관례
+ * Emil design-eng + make-interfaces-feel-better + Vercel Web Interface Guidelines
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces — 순백 대신 따뜻한 종이톤(눈 피로↓) */
+  --page: #f1efe9;
+  --canvas: #f7f5f0;
+  --surface: #e8e4dc;
+  --foreground: #2c2a26;
+  --body: #5a564f;
+  --muted: #827c73;
+  --border: #d5d0c6;
+  --line-w: 1px;
+  --line: var(--line-w) solid var(--border);
+  --line-primary: var(--line-w) solid var(--primary);
+  --line-danger: var(--line-w) solid var(--danger-line);
+
+  /* 채도·대비를 살짝 낮춘 파랑 */
+  --primary: #3d7ec4;
+  --primary-hover: #2f6eb0;
+  --on-primary: #f7f5f0;
+  --weak-bg: #dde8f4;
+  --weak-fg: #2a5f9a;
+
+  --danger: #c45b5f;
+  --ok-bg: #e0efe6;
+  --ok-fg: #2a6b45;
+  --warn-bg: #f3eadc;
+  --warn-fg: #8a5a12;
+  --danger-bg: #f4e6e7;
+  --danger-line: #d8b0b3;
+
+  /* ——— 8pt spacing scale (4의 배수) ——— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  /* 하위 호환 별칭 — sm=8 · md=12 · lg=16 (의도가 겹치지 않게) */
+  --space-xs: var(--space-1);
+  --space-sm: var(--space-2);
+  --space-md: var(--space-3);
+  --space-lg: var(--space-4);
+  --space-xl: var(--space-5);
+  --space-xxl: var(--space-6);
+
+  /* Radius — 동심원: outer ≈ inner + padding */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+  --radius-btn-sm: 8px;
+  --radius-btn-md: 8px;
+  --radius-btn-lg: 10px;
+  --radius-btn-xl: 12px;
+
+  /* Type — WM 시맨틱 ↔ KRDS 스케일 (앱 UI는 body-medium보다 한 단 작게)
+   * --wm-type-scale: 전체 서체·글자 인접 레이아웃 배율 (1 = 기준, 1.2 = 120%)
+   */
+  --wm-type-scale: 1.2;
+  --font: "Toss Product Sans", "Pretendard GOV", "Pretendard", -apple-system,
+    BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR",
+    sans-serif;
+  --font-mono: ui-monospace, Consolas, "SF Mono", monospace;
+
+  /* ——— KRDS 원시 토큰 (공식 krds_tokens.css PC 스케일 × --wm-type-scale)
+   * 출처: https://github.com/KRDS-uiux/krds-uiux · style_03
+   */
+  --krds-typo-font-type: "Pretendard GOV", "Pretendard", sans-serif;
+  --krds-font-weight-regular: 400;
+  --krds-font-weight-bold: 700;
+  --krds-line-height: 1.5;
+  --krds-letter-spacing-0: 0;
+  --krds-letter-spacing-1: 1px;
+  --krds-pc-font-size-heading-medium: calc(24px * var(--wm-type-scale));
+  --krds-pc-font-size-heading-small: calc(19px * var(--wm-type-scale));
+  --krds-pc-font-size-heading-xsmall: calc(17px * var(--wm-type-scale));
+  --krds-pc-font-size-heading-xxsmall: calc(15px * var(--wm-type-scale));
+  --krds-pc-font-size-body-large: calc(19px * var(--wm-type-scale));
+  --krds-pc-font-size-body-medium: calc(17px * var(--wm-type-scale));
+  --krds-pc-font-size-body-small: calc(15px * var(--wm-type-scale));
+  --krds-pc-font-size-body-xsmall: calc(13px * var(--wm-type-scale));
+  --krds-pc-font-size-label-medium: calc(17px * var(--wm-type-scale));
+  --krds-pc-font-size-label-small: calc(15px * var(--wm-type-scale));
+  --krds-pc-font-size-label-xsmall: calc(13px * var(--wm-type-scale));
+  /* 글자 주변 간격도 같이 키워 잘림·답답함 방지 */
+  --krds-number-7: calc(12px * var(--wm-type-scale));
+  --krds-number-8: calc(16px * var(--wm-type-scale));
+  --krds-number-9: calc(20px * var(--wm-type-scale));
+  --krds-number-10: calc(24px * var(--wm-type-scale));
+  --krds-number-12: calc(32px * var(--wm-type-scale));
+  --krds-pc-padding-card-xsmall: var(--krds-number-8);
+  --krds-pc-padding-card-small: var(--krds-number-10);
+  --krds-pc-padding-card-medium: var(--krds-number-12);
+  --krds-pc-gap-layout-title-body-small: var(--krds-number-8);
+  --krds-pc-gap-layout-title-body-medium: var(--krds-number-9);
+  --krds-pc-gap-layout-text-text-small: var(--krds-number-7);
+  --krds-pc-gap-layout-text-text-medium: var(--krds-number-8);
+  --krds-gap-4: var(--krds-number-7);
+  --krds-gap-5: var(--krds-number-8);
+
+  /* WM 역할 토큰 — 화면 역할만 보고 고른다 (KRDS 이름에 묶지 않음) */
+  --typo-page-title-size: calc(22px * var(--wm-type-scale)); /* 피커·보드 큰 제목 */
+  --typo-page-title-weight: var(--krds-font-weight-bold);
+  --typo-section-size: var(--krds-pc-font-size-heading-xsmall);
+  --typo-section-weight: var(--krds-font-weight-bold);
+  --typo-panel-title-size: var(--krds-pc-font-size-heading-xxsmall);
+  --typo-panel-title-weight: var(--krds-font-weight-bold);
+  --typo-body-size: var(--krds-pc-font-size-body-small);
+  --typo-body-weight: var(--krds-font-weight-regular);
+  --typo-label-size: var(--krds-pc-font-size-label-small);
+  --typo-label-weight: var(--krds-font-weight-bold);
+  --typo-caption-size: var(--krds-pc-font-size-body-xsmall);
+  --typo-caption-weight: var(--krds-font-weight-regular);
+  --typo-logo-size: calc(18px * var(--wm-type-scale));
+  --typo-logo-weight: var(--krds-font-weight-bold);
+
+  /* 하위 호환 별칭 — 기존 --text-* 사용처 */
+  --text-body: var(--typo-body-size);
+  --lh-body: calc(var(--typo-body-size) * var(--krds-line-height));
+  --text-small: var(--typo-caption-size);
+  --lh-small: calc(var(--typo-caption-size) * var(--krds-line-height));
+  --text-h1: var(--typo-page-title-size);
+  --lh-h1: calc(var(--typo-page-title-size) * var(--krds-line-height));
+  --text-sec: var(--typo-section-size);
+  --lh-sec: calc(var(--typo-section-size) * var(--krds-line-height));
+  --text-logo: var(--typo-logo-size);
+  --lh-logo: calc(var(--typo-logo-size) * var(--krds-line-height));
+
+  /* Layout · controls · 버튼 — 글자 배율에 맞춰 높이·레일·카드도 키움 */
+  --page-pad-x: var(--space-5);
+  --rail-width: minmax(
+    calc(220px * var(--wm-type-scale)),
+    calc(240px * var(--wm-type-scale))
+  );
+  --content-max: none;
+  --content-band: 72rem;
+  --header-min-h: calc(56px * var(--wm-type-scale));
+  --steps-h: calc(48px * var(--wm-type-scale));
+  --status-h: calc(40px * var(--wm-type-scale));
+  --grid-gap: var(--space-4);
+  --gallery-cols: 4;
+  --card-h: calc(192px * var(--wm-type-scale));
+  --card-field-h: calc(160px * var(--wm-type-scale));
+  --card-story-h: calc(176px * var(--wm-type-scale));
+  --card-row-h: calc(96px * var(--wm-type-scale));
+  --card-meta-h: calc(56px * var(--wm-type-scale));
+  --card-pad: var(--space-5);
+  --stack-gap: var(--space-5);
+  --row-h: calc(36px * var(--wm-type-scale));
+  --control-h: calc(36px * var(--wm-type-scale));
+  --control-pad-x: calc(10px * var(--wm-type-scale));
+  --control-pad-end: calc(36px * var(--wm-type-scale));
+  --control-radius: var(--radius-md);
+  --control-chevron-size: calc(12px * var(--wm-type-scale));
+  /* 버튼 공통: 높이·최소 터치·가로 패딩·모서리 */
+  --btn-h: calc(32px * var(--wm-type-scale));
+  --btn-h-sm: calc(28px * var(--wm-type-scale));
+  --touch-min: calc(32px * var(--wm-type-scale));
+  --btn-pad-x: calc(12px * var(--wm-type-scale));
+  --btn-pad-x-sm: calc(8px * var(--wm-type-scale));
+  --btn-radius: var(--radius-md);
+  --choice-min-h: calc(72px * var(--wm-type-scale));
+  --choice-min-w: calc(160px * var(--wm-type-scale));
+
+  /* 포커스·선택은 색 테두리 1겹만. 바깥 outline·그림자 고리를 기존 선과 겹치지 않는다.
+     구현: outline:none + border-color: var(--focus-border). --focus-ring은 쓰지 않음(잔여 선언 무력화). */
+  --focus-border: var(--primary);
+  --focus-ring: none;
+  --focus-offset: 0;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur: 160ms;
+  --press-scale: 0.97;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces — 순흑·순백 금지, 따뜻한 차콜(눈부심↓) */
+  --page: #16151a;
+  --canvas: #1e1d24;
+  --surface: #2a2830;
+  --foreground: #e2e0d9;
+  --body: #a8a49c;
+  --muted: #7d7972;
+  --border: #35333c;
+
+  --primary: #6b9fd4;
+  --primary-hover: #84b0dc;
+  --on-primary: #12111a;
+  --weak-bg: #243142;
+  --weak-fg: #a8c6e8;
+
+  --danger: #d48484;
+  --ok-bg: #1c2a22;
+  --ok-fg: #8fbfa0;
+  --warn-bg: #2c261a;
+  --warn-fg: #d4b06a;
+  --danger-bg: #2c1e20;
+  --danger-line: #5c3a3e;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+  }
+}

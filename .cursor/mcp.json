@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\paaks\\Desktop\\worldmanager\\.cursor\\scripts\\run-mcp.mjs",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\paaks\\Desktop\\worldmanager"
+      ],
+      "cwd": "C:\\Users\\paaks\\Desktop\\worldmanager"
+    },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\paaks\\Desktop\\worldmanager\\.cursor\\scripts\\run-mcp.mjs",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "cwd": "C:\\Users\\paaks\\Desktop\\worldmanager"
+    },
+    "code-review-graph": {
+      "type": "stdio",
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\paaks\\Desktop\\worldmanager\\.cursor\\scripts\\run-mcp.mjs",
+        "uvx",
+        "code-review-graph",
+        "serve"
+      ],
+      "cwd": "C:\\Users\\paaks\\Desktop\\worldmanager"
+    },
+    "memory": {
+      "type": "stdio",
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\paaks\\Desktop\\worldmanager\\.cursor\\scripts\\run-mcp.mjs",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "cwd": "C:\\Users\\paaks\\Desktop\\worldmanager",
+      "env": {
+        "MEMORY_FILE_PATH": "C:\\Users\\paaks\\Desktop\\worldmanager\\.cursor\\memory.json"
+      }
+    }
+  }
+}
