@@ -18,7 +18,7 @@ index.html
   seed-data → constants → theme
   store → store-maps → store-query
   templates/shell
-  views: module-rail → board → board-identity → module-page → world-map → world-picker
+  views: module-rail → board → board-identity → module-page → world-map → write → world-picker
   actions: nodes → backup
   main
 ```
@@ -32,6 +32,7 @@ index.html
 
 - 이미 있는 코드를 재사용하고, 새 폴더·새 라이브러리는 꼭 필요할 때만.
 - 에이전트 스킬은 `.agents/skills/` 의 `wm_최적화` · `ponytail` 계열 · `humanize-korean` 만 둔다.
+- 한글 윤문(`/humanize-korean`)은 이 폴더에 설치됨. 스킬: `.claude/skills/humanize-korean`(Cursor는 `.cursor/skills/`에도 동일 복사). 점수·게이트 스크립트: `scripts/prepare_monolith_input.py`, `scripts/verify_gates.py`. 원본 저장소 클론은 `tools/im-not-ai/`(git 제외).
 - 커밋·푸시는 사용자가 요청할 때만.
 - 지도 테스트 데이터(`wm_demo_` 등)는 남기지 않는다. 제품 데이터만 둔다.
 - 답변은 한국어, 쉬운 말로. 작업이 끝나면 3줄 이내로 요약.

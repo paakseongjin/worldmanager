@@ -31,6 +31,24 @@
             <button type="button" id="btnImportJson" class="btn btn-weak" tabindex="0" aria-label="백업 파일 불러오기">백업 불러오기</button>
             <input id="importFile" type="file" accept="application/json,.json" hidden />
             <button type="button" id="btnExportJson" class="btn btn-weak" tabindex="0">백업 저장</button>
+            <details class="top-keys">
+              <summary class="btn btn-weak" tabindex="0">API 키</summary>
+              <div class="top-keys-fields form">
+                <p id="writeQuota" class="field-hint">키 상태를 불러오는 중…</p>
+                <label class="field"><span>어느 길로</span>
+                  <select id="writeProvider">
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="bytez">Bytez</option>
+                  </select>
+                </label>
+                <label class="field"><span>OpenRouter 키</span>
+                  <input id="writeOrKey" type="password" autocomplete="off" /></label>
+                <label class="field"><span>Bytez 키</span>
+                  <input id="writeBzKey" type="password" autocomplete="off" /></label>
+                <p class="field-hint">적어 둔 칸만 바뀝니다. Bytez는 키만으로는 부족하고, 사이트 카탈로그에 chat 모델을 넣어야 합니다.</p>
+                <button type="button" id="writeKeys" class="btn btn-weak" tabindex="0">키 저장</button>
+              </div>
+            </details>
           </div>
         </details>
       </div>
@@ -58,6 +76,7 @@
           </div>
           <div class="board-toolbar-actions">
             <button type="button" id="btnBoardBack" class="btn btn-outline" tabindex="0" hidden>← 뒤로</button>
+            <button type="button" id="btnCorrect" class="btn btn-outline" tabindex="0" disabled>보정</button>
             <button type="button" id="btnEditModule" class="btn btn-outline" tabindex="0">고치기</button>
             <button type="button" id="btnDeleteModule" class="btn btn-outline-danger" tabindex="0">지우기</button>
             <button type="button" id="btnBoardAddGroup" class="btn btn-outline" tabindex="0">그룹 추가</button>
@@ -85,6 +104,27 @@
       <div id="wmPeekBody" class="wm-dialog-body"></div>
       <footer class="wm-dialog-foot">
         <button type="button" id="wmPeekOpen" class="btn btn-primary" tabindex="0">이 모듈 열기</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="wmCorrect" class="wm-dialog" aria-labelledby="wmCorrectTitle">
+    <div class="wm-dialog-panel">
+      <header class="wm-dialog-head">
+        <h2 id="wmCorrectTitle">보정</h2>
+        <button type="button" id="wmCorrectClose" class="btn btn-outline btn-sm" tabindex="0" aria-label="닫기">닫기</button>
+      </header>
+      <div class="wm-dialog-body">
+        <p id="wmCorrectHint" class="field-hint">승인한 뒤에만 원래 칸에 넣습니다.</p>
+        <label class="field"><span>지금 글</span>
+          <pre id="wmCorrectFrom" class="wm-correct-from"></pre></label>
+        <label class="field"><span>고친 글</span>
+          <textarea id="wmCorrectTo" class="page-card-area" rows="8" aria-label="고친 글"></textarea></label>
+        <p id="wmCorrectSuggest" class="field-hint" hidden></p>
+      </div>
+      <footer class="wm-dialog-foot">
+        <button type="button" id="wmCorrectCancel" class="btn btn-outline" tabindex="0">취소</button>
+        <button type="button" id="wmCorrectApply" class="btn btn-primary" tabindex="0">적용</button>
       </footer>
     </div>
   </dialog>
@@ -166,6 +206,7 @@
     }
     menu.addEventListener("toggle", syncMenuLabel);
     menu.addEventListener("click", function (e) {
+      if (e.target.closest(".top-keys")) return;
       if (e.target.closest(".top-menu-panel button")) menu.open = false;
     });
     syncMenuLabel();

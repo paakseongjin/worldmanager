@@ -27,6 +27,7 @@ tools/code-review-graph-src/
 tmp/
 temp/
 .DS_Store
+_workspace/
 
 # 큰 파일/아카이브
 *.zip
@@ -36,3 +37,8 @@ temp/
 *.gz
 
 tools/novelWriter/
+
+# 세계관 본문·백업 — 기본 검색에서 제외 (요청 시에만 읽음)
+data/worlds/
+data/world-bible.json
+data/backups/

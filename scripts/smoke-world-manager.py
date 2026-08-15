@@ -36,6 +36,7 @@ MODULE_PATHS = [
     "/world-manager/js/views/board-identity.js",
     "/world-manager/js/views/module-page.js",
     "/world-manager/js/views/world-map.js",
+    "/world-manager/js/views/write.js",
     "/world-manager/js/views/world-picker.js",
     "/world-manager/js/actions/nodes.js",
     "/world-manager/js/actions/backup.js",
@@ -82,6 +83,8 @@ def main() -> int:
     checks.append(("in-page add block", "add-block" in (ROOT / "world-manager/js/views/module-page.js").read_text(encoding="utf-8"), "ok"))
     checks.append(("trash button", 'id="btnTrash"' in shell and 'id="btnTrashEmpty"' in shell, "ok"))
     checks.append(("map button", 'id="btnMap"' in shell and 'id="wmPeek"' in shell, "ok"))
+    checks.append(("correct button", 'id="btnCorrect"' in shell and 'id="wmCorrect"' in shell, "ok"))
+    checks.append(("keys in menu", 'id="writeKeys"' in shell and "top-keys" in shell, "ok"))
     checks.append(("header menu", 'class="top-menu"' in shell and "메뉴" in shell, "ok"))
     checks.append(("status live", 'aria-live="polite"' in shell and 'id="statusText"' in shell, "ok"))
     shell_css = (ROOT / "world-manager/styles/shell.css").read_text(encoding="utf-8")
@@ -108,6 +111,9 @@ def main() -> int:
     checks.append(("composeModuleId", "composeModuleId" in store_js and "renameNodeId" in store_js, "ok"))
     checks.append(("escapeHtml helper", "BF.escapeHtml" in store_js, "ok"))
     checks.append(("persist fail status", "브라우저에 저장하지 못했습니다" in store_js, "ok"))
+    checks.append(("folder etag put", "If-Match" in store_js and "412" in store_js, "ok"))
+    checks.append(("folder watch", "startFolderWatch" in store_js and "pullFolderIfChanged" in store_js, "ok"))
+    checks.append(("folder apply no push", "applyFolderData" in store_js and "_skipFolderPush" in store_js, "ok"))
     checks.append(("granular stats", "갈래 " in store_js and " · 그룹 " in store_js and "__statsCheck" in store_query, "ok"))
     checks.append(("place label", "placeLabel" in store_js and "__placeCheck" in store_query, "ok"))
     checks.append(("module number sort", "compareByModuleNumber" in store_js, "ok"))
@@ -140,7 +146,10 @@ def main() -> int:
     checks.append(("no drive button", 'id="btnDrive"' not in shell, "ok"))
     checks.append(("no cover button", 'id="btnCover"' not in shell, "ok"))
     checks.append(("no quality button", 'id="btnQuality"' not in shell, "ok"))
-    checks.append(("world files api", "list_world_files" in (ROOT / "scripts/world-manager-server.py").read_text(encoding="utf-8"), "ok"))
+    server_py = (ROOT / "scripts/world-manager-server.py").read_text(encoding="utf-8")
+    checks.append(("world files api", "list_world_files" in server_py, "ok"))
+    checks.append(("live world etag", "If-None-Match" in server_py and "file_etag" in server_py, "ok"))
+    checks.append(("put if-match", "If-Match" in server_py and "412" in server_py, "ok"))
     checks.append(("markdown maps", "nodeToMarkdown" in store_maps and "rebuildMaps" in store_maps and "__mapCheck" in store_query, "ok"))
     checks.append(("taxonomies", "rememberTaxonomy" in store_maps and "forgetTaxonomy" in store_maps, "ok"))
     checks.append(("taxonomy junk filter", "isTaxonomyJunk" in store_maps and "pruneTaxonomies" in store_maps, "ok"))
@@ -158,6 +167,12 @@ def main() -> int:
     checks.append(("world map empty state", "아직 올릴 모듈이 없습니다" in map_js and "wm-map-code" in map_js, "ok"))
     checks.append(("no map demo seed", "ensureMapDemo" not in map_js and "wm_demo_" not in map_js, "ok"))
     checks.append(("world-map in index", "js/views/world-map.js" in html, "ok"))
+    write_js = (ROOT / "world-manager/js/views/write.js").read_text(encoding="utf-8")
+    checks.append(("write tools", "bootWriteTools" in write_js and "btnCorrect" in write_js and "__correctApplyCheck" in write_js, "ok"))
+    checks.append(("write in index", "js/views/write.js" in html, "ok"))
+    checks.append(("no novel draft page", "openWrite" not in write_js and "renderWrite" not in write_js, "ok"))
+    srv = (ROOT / "scripts/world-manager-server.py").read_text(encoding="utf-8")
+    checks.append(("write api", '["api", "write"]' in srv and "wm_write" in srv, "ok"))
 
     board_css = (ROOT / "world-manager/styles/board.css").read_text(encoding="utf-8")
     checks.append(
@@ -287,6 +302,7 @@ def main() -> int:
         )
     )
     checks.append(("world-picker in index", "js/views/world-picker.js" in html, "ok"))
+    checks.append(("open world no auto put", "if (!seeded && BF.persist) BF.persist()" not in picker_js, "ok"))
     checks.append(("worlds list button", 'id="btnWorlds"' in shell and "세계관 목록" in shell, "ok"))
     checks.append(("picker uses major hints", "MAJOR_HINTS" in picker_js and "blankWorldBible" in picker_js, "ok"))
     checks.append(

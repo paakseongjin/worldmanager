@@ -261,6 +261,7 @@
     var isPage = mode === "page";
     var isMap = mode === "map";
     setToolbarBtn("btnBoardBack", isTrash || isPage || isMap, "← 보드", "보드로 돌아가기");
+    setToolbarBtn("btnCorrect", !isTrash && !isMap, "보정", "고른 글 보정");
     setToolbarBtn("btnEditModule", mode === "gallery", "고치기", "이 갈래 고치기");
     setToolbarBtn(
       "btnDeleteModule",
@@ -361,6 +362,7 @@
     var mod = BF.findNode(moduleId);
     function done() {
       BF.setStatus();
+      if (BF.syncCorrectBtn) BF.syncCorrectBtn();
     }
     if (BF.state.trashOpen) {
       syncToolbar("trash");
@@ -621,11 +623,13 @@
   BF.boardBack = function boardBack() {
     if (BF.state.trashOpen) {
       BF.state.trashOpen = false;
+      if (BF.persist) BF.persist();
       BF.renderBoard();
       return;
     }
     if (BF.state.mapOpen) {
       BF.state.mapOpen = false;
+      if (BF.persist) BF.persist();
       BF.renderBoard();
       return;
     }
@@ -653,6 +657,7 @@
       if (inp) inp.value = "";
     }
     BF.renderBoard();
+    if (BF.persist) BF.persist();
   };
 
   BF.refreshAll = function refreshAll() {

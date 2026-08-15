@@ -66,17 +66,20 @@
   }
 
   /** 고른 세계관 폴더로 보드를 연다 */
-  BF.openWorldApp = async function openWorldApp(data, status) {
+  BF.openWorldApp = async function openWorldApp(data, status, viewUi) {
     BF.mountShell();
     BF.bootTheme();
     // 본문을 먼저 넣는다 — 이 전에 persist가 돌면 빈 nodes로 덮어씀
     BF._openingWorld = true;
     BF.applyData(data);
     BF._openingWorld = false;
+    if (viewUi && BF.restoreViewState) BF.restoreViewState(viewUi);
     if (BF.bootRail) BF.bootRail();
     bindEvents();
+    if (BF.bootWriteTools) BF.bootWriteTools();
     if (BF.refreshAll) BF.refreshAll();
     else if (BF.renderBoard) BF.renderBoard();
+    if (BF.startFolderWatch) BF.startFolderWatch();
     BF.setStatus(status || "세계관을 열었습니다.");
   };
 

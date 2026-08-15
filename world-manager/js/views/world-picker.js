@@ -782,20 +782,16 @@
         data,
         seeded
           ? "「" + ((data.meta && data.meta.title) || slug) + "」· 기본 모듈을 다시 넣었습니다."
-          : "「" + ((data.meta && data.meta.title) || slug) + "」을 열었습니다."
+          : "「" + ((data.meta && data.meta.title) || slug) + "」을 열었습니다.",
+        viewUi
       );
     }
-    if (viewUi && BF.restoreViewState) {
-      BF.restoreViewState(viewUi);
-      if (BF.refreshAll) BF.refreshAll();
-      else if (BF.renderBoard) BF.renderBoard();
-    }
     // 시드로 채운 직후 바로 폴더에 밀어 넣으면, 잠깐 비었던 본문이 영구 삭제될 수 있음
-    // → 시드가 아닐 때만 자동 저장. 시드는 사용자가 편집한 뒤 저장되게 둔다.
-    if (!seeded && BF.persist) BF.persist();
+    // 폴더가 이미 있으면 열자마자 PUT하지 않음 — 낡은 화면이 최신 폴더를 덮는 사고 방지
   };
 
   BF.leaveWorld = function leaveWorld() {
+    if (BF.stopFolderWatch) BF.stopFolderWatch();
     if (BF.state.worldSlug && BF.persist) BF.persist();
     BF.state.worldSlug = "";
     // 목록으로 나간 뒤에는 새로고침해도 목록이 나오게

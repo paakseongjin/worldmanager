@@ -24,6 +24,7 @@ ORDER = [
     "shell.css",
     "form.css",
     "board.css",
+    "write.css",
 ]
 
 # 합본 뒤에 남아 옛 레이아웃을 덮던 인라인 블록 제거용

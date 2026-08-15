@@ -1,5 +1,6 @@
 """정적 파일 서버 + 세계관 폴더 저장 · 로컬 백업."""
 import json
+import os
 import re
 import shutil
 import sys
@@ -10,6 +11,11 @@ from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
+
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+import wm_write  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 WORLDS_DIR = ROOT / "data" / "worlds"
@@ -110,6 +116,21 @@ def _move_unique(src: Path, dest_parent: Path) -> Path:
 def write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def file_etag(path: Path) -> str:
+    """폴더 최신본 전용. backups/ 파일은 쓰지 않는다."""
+    st = path.stat()
+    return '"%x-%x"' % (st.st_mtime_ns & 0xFFFFFFFFFFFF, st.st_size)
+
+
+def etag_in_header(header: str, etag: str) -> bool:
+    if not header:
+        return False
+    got = header.strip()
+    if got == "*":
+        return True
+    return etag in [p.strip() for p in got.split(",")]
 
 
 def _safe_name(raw: str, fallback: str = "note") -> str:
@@ -266,6 +287,50 @@ def write_markdown_vault(world_folder: Path, data: dict) -> int:
     return written
 
 
+def _graph_ident(nid: str) -> str:
+    t = re.sub(r"[^A-Za-z0-9_]", "_", str(nid or "n"))
+    if not t or t[0].isdigit():
+        t = "n_" + t
+    return t[:80]
+
+
+def write_setting_graph(world_folder: Path, data: dict) -> None:
+    """모듈·관계를 JS 호출 그래프로 남긴다. 저장할 때마다 다시 씀.
+
+    ponytail: Cursor MCP(CRG/graft)는 브라우저가 못 부름.
+    이 파일을 두면 에이전트가 그래프 도구로 읽을 수 있다.
+    """
+    nodes = [n for n in (data.get("nodes") or []) if isinstance(n, dict)]
+    alive = [n for n in nodes if not n.get("deletedAt") and n.get("id")]
+    js = ["/** auto-generated world setting graph — do not edit */", ""]
+    mmd = ["graph LR"]
+    for n in alive:
+        ident = _graph_ident(str(n.get("id")))
+        name = _display_name(n).replace('"', "'")
+        callees = []
+        pid = str(n.get("parentId") or "").strip()
+        if pid:
+            callees.append(_graph_ident(pid))
+        for r in n.get("relationships") or []:
+            if not isinstance(r, dict):
+                continue
+            tid = str(r.get("targetId") or "").strip()
+            if tid:
+                callees.append(_graph_ident(tid))
+        seen = []
+        for c in callees:
+            if c not in seen and c != ident:
+                seen.append(c)
+        body = "".join("  %s();\n" % c for c in seen) if seen else "  return;\n"
+        js.append("function %s() {\n%s}\n" % (ident, body))
+        mmd.append('  %s["%s"]' % (ident, name))
+        for c in seen:
+            mmd.append("  %s --> %s" % (ident, c))
+    world_folder.mkdir(parents=True, exist_ok=True)
+    (world_folder / "setting-graph.js").write_text("\n".join(js) + "\n", encoding="utf-8")
+    (world_folder / "setting-map.mmd").write_text("\n".join(mmd) + "\n", encoding="utf-8")
+
+
 def save_world_bible(folder: Path, data: dict) -> None:
     """JSON 최신본 + 마크다운 폴더를 같이 맞춘다.
 
@@ -286,8 +351,17 @@ def save_world_bible(folder: Path, data: dict) -> None:
                 for n in (data.get("nodes") or [])
                 if isinstance(n, dict) and not n.get("deletedAt")
             ]
+            default_ids = {row[0] for row in DEFAULT_MAJORS}
+            old_custom = [n for n in old_n if str(n.get("id") or "") not in default_ids]
+            new_custom = [n for n in new_n if str(n.get("id") or "") not in default_ids]
+            # 큰 갈래만 있는 옛 화면이, 카드가 있는 폴더를 덮지 못하게
+            if old_custom and not new_custom:
+                raise ValueError(
+                    "refuse wipe modules: had %d extra nodes, got majors only"
+                    % len(old_custom)
+                )
             # 예전 본문이 충분히 있고, 새 본문이 절반 미만이면 거절
-            if len(old_n) >= 40 and len(new_n) < max(16, len(old_n) // 2):
+            if len(old_n) >= 20 and len(new_n) < max(16, len(old_n) // 2):
                 raise ValueError(
                     "refuse shrink bible: had %d alive nodes, got %d"
                     % (len(old_n), len(new_n))
@@ -298,6 +372,7 @@ def save_world_bible(folder: Path, data: dict) -> None:
             pass
     write_json(latest, data)
     write_markdown_vault(folder, data)
+    write_setting_graph(folder, data)
 
 
 def rotate_backup(data: dict, dest_dir: Path) -> Path:
@@ -567,6 +642,11 @@ def self_check() -> None:
     body = harbor[0].read_text(encoding="utf-8")
     if "항구" not in body or "바닷가 마을" not in body:
         raise SystemExit("module markdown content mismatch")
+    graph_js = (folder / "setting-graph.js").read_text(encoding="utf-8")
+    if "function note_harbor()" not in graph_js or "n_00_CANON" not in graph_js:
+        raise SystemExit("setting graph missing after save")
+    if not (folder / "setting-map.mmd").is_file():
+        raise SystemExit("setting map missing after save")
     files = list_world_files(folder)
     if LATEST_NAME not in files or not any(f.startswith("markdown/") for f in files):
         raise SystemExit("list_world_files incomplete")
@@ -575,6 +655,9 @@ def self_check() -> None:
     prev = (d / "bak" / PREV_NAME).read_text(encoding="utf-8")
     if '"t"' not in prev:
         raise SystemExit("backup prev rotate failed")
+    e1 = file_etag(d / "bak" / LATEST_NAME)
+    if not etag_in_header(e1, e1) or etag_in_header("", e1):
+        raise SystemExit("etag match helper failed")
     # 자동 백업이 세계관 폴더에서 최신을 덮어쓰는지
     probe = WORLDS_DIR / "_autobak_check"
     try:
@@ -600,12 +683,30 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self, fmt: str, *args) -> None:
         sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
 
-    def _send(self, code: int, raw: bytes, ctype: str = "application/json; charset=utf-8") -> None:
+    def _send(
+        self,
+        code: int,
+        raw: bytes,
+        ctype: str = "application/json; charset=utf-8",
+        extra: dict | None = None,
+    ) -> None:
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(raw)))
+        if extra:
+            for key, val in extra.items():
+                self.send_header(key, val)
         self.end_headers()
-        self.wfile.write(raw)
+        if raw:
+            self.wfile.write(raw)
+
+    def _send_latest(self, latest: Path, code: int = 200) -> None:
+        raw = latest.read_bytes()
+        self._send(
+            code,
+            raw,
+            extra={"ETag": file_etag(latest), "Cache-Control": "no-store"},
+        )
 
     def _read_json(self):
         try:
@@ -629,6 +730,11 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self) -> None:
         parts = self._parts()
+        if parts == ["api", "write"]:
+            wm_write.load_dotenv()
+            code, raw = _json_bytes(wm_write.status())
+            self._send(code, raw)
+            return
         if parts == ["worlds"]:
             migrate_legacy()
             qs = parse_qs(urlparse(self.path).query)
@@ -656,8 +762,11 @@ class Handler(SimpleHTTPRequestHandler):
                         write_markdown_vault(folder, data)
                 except (OSError, UnicodeDecodeError, json.JSONDecodeError, TypeError):
                     pass
-            raw = latest.read_bytes()
-            self._send(200, raw)
+            etag = file_etag(latest)
+            if etag_in_header(self.headers.get("If-None-Match") or "", etag):
+                self._send(304, b"", extra={"ETag": etag, "Cache-Control": "no-store"})
+                return
+            self._send_latest(latest)
             return
         if len(parts) == 3 and parts[0] == "worlds" and parts[2] == "files":
             try:
@@ -686,6 +795,45 @@ class Handler(SimpleHTTPRequestHandler):
         data = self._read_json()
         if data is None:
             self.send_error(400, "json")
+            return
+        if parts == ["api", "write"]:
+            wm_write.load_dotenv()
+            slug = str(data.get("slug") or "").strip()
+            bible = None
+            if slug:
+                try:
+                    folder = world_dir(slug)
+                    latest = folder / LATEST_NAME
+                    if latest.exists():
+                        bible = json.loads(latest.read_text(encoding="utf-8"))
+                except (ValueError, OSError, UnicodeDecodeError, json.JSONDecodeError):
+                    bible = None
+            try:
+                out = wm_write.generate(data, bible if isinstance(bible, dict) else None)
+            except ValueError as exc:
+                code, raw = _json_bytes({"error": str(exc)})
+                self._send(400, raw)
+                return
+            except RuntimeError as exc:
+                code, raw = _json_bytes({"error": str(exc)})
+                self._send(502, raw)
+                return
+            code, raw = _json_bytes(out)
+            self._send(code, raw)
+            return
+        if parts == ["api", "write", "keys"]:
+            wm_write.load_dotenv()
+            or_key = data.get("openrouter")
+            bz_key = data.get("bytez")
+            if or_key is not None and not isinstance(or_key, str):
+                self.send_error(400, "openrouter")
+                return
+            if bz_key is not None and not isinstance(bz_key, str):
+                self.send_error(400, "bytez")
+                return
+            out = wm_write.save_secrets(or_key, bz_key)
+            code, raw = _json_bytes(out)
+            self._send(code, raw)
             return
         if parts == ["worlds"]:
             title = str(data.get("title") or "").strip()
@@ -735,7 +883,6 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_error(404, "no world")
                 return
             rotate_backup(data, folder / "backups")
-            save_world_bible(folder, data)
             code, raw = _json_bytes({"ok": True, "file": "data/worlds/%s/backups/%s" % (parts[1], LATEST_NAME)})
             self._send(code, raw)
             return
@@ -752,7 +899,6 @@ class Handler(SimpleHTTPRequestHandler):
                     return
                 folder.mkdir(parents=True, exist_ok=True)
                 rotate_backup(data, folder / "backups")
-                save_world_bible(folder, data)
                 code, raw = _json_bytes({"ok": True, "file": "data/worlds/%s/backups/%s" % (slug, LATEST_NAME)})
                 self._send(code, raw)
                 return
@@ -793,6 +939,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_error(400, "slug")
             return
         folder.mkdir(parents=True, exist_ok=True)
+        latest = folder / LATEST_NAME
+        if latest.is_file():
+            current = file_etag(latest)
+            match = self.headers.get("If-Match") or ""
+            if not etag_in_header(match, current):
+                # 폴더가 더 최신 — 낡은 화면 본문으로 덮지 않음
+                self._send_latest(latest, 412)
+                return
         if not isinstance(data.get("meta"), dict):
             data["meta"] = {}
         data["meta"]["worldSlug"] = parts[1]
@@ -802,6 +956,9 @@ class Handler(SimpleHTTPRequestHandler):
             code, raw = _json_bytes({"ok": False, "error": str(exc)})
             self._send(409, raw)
             return
+        extra = {"Cache-Control": "no-store"}
+        if latest.is_file():
+            extra["ETag"] = file_etag(latest)
         code, raw = _json_bytes(
             {
                 "ok": True,
@@ -809,7 +966,7 @@ class Handler(SimpleHTTPRequestHandler):
                 "markdown": "data/worlds/%s/markdown/" % parts[1],
             }
         )
-        self._send(code, raw)
+        self._send(code, raw, extra=extra)
 
 
 def main() -> int:
@@ -822,6 +979,7 @@ def main() -> int:
             port = int(arg)
     WORLDS_DIR.mkdir(parents=True, exist_ok=True)
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    wm_write.load_dotenv()
     migrate_legacy()
     threading.Thread(target=auto_backup_loop, name="wm-auto-backup", daemon=True).start()
     httpd = ThreadingHTTPServer(("127.0.0.1", port), Handler)

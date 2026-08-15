@@ -6,13 +6,22 @@ __pycache__/
 .env
 .env.*
 !.env.example
+data/.secrets.json
+data/write-quota.json
 .code-review-graph/
 .cursor/memory.json
 .cursor/debug*.log
 tmp/
 temp/
 .cache/
+_workspace/
 world-manager/.server-*.pid
 data/backups/*.json
 data/worlds/*
 !data/worlds/.gitkeep
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+graft/
+
+# 외부 도구 클론(용량 큼, 원본은 따로 둠)
+tools/im-not-ai/

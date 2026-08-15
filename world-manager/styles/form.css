@@ -24,6 +24,7 @@
   box-sizing: border-box;
   border: var(--line, 1px solid var(--border));
   border-radius: var(--control-radius, var(--radius-md));
+  /* 마당(--page) 위에서는 흰/밝은 패널로 칸이 떠 보이게 */
   background-color: var(--canvas);
   color: var(--foreground);
   font: inherit;
@@ -129,6 +130,10 @@ input[type="search"] {
   cursor: not-allowed;
 }
 
+.btn[hidden] {
+  display: none !important;
+}
+
 .btn:focus,
 .btn:focus-visible {
   outline: none;
@@ -158,41 +163,42 @@ input[type="search"] {
   border-color: var(--primary-hover);
 }
 
-/* 보조·도구 — 옅은 배경 */
+/* 보조·도구 — 프로모 타일 면 */
 .btn-weak {
   background: var(--weak-bg);
   color: var(--weak-fg);
-  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+  border-color: var(--weak-bg);
 }
 
 .btn-weak:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--weak-bg) 70%, var(--surface));
+  background: color-mix(in srgb, var(--weak-bg) 70%, var(--canvas));
+  border-color: color-mix(in srgb, var(--weak-bg) 70%, var(--canvas));
 }
 
-/* 일반 보조 — 테두리만 */
+/* 일반 보조 — 계정 필처럼 흰 면 + 가는 테두리 */
 .btn-outline {
   background: var(--canvas);
   color: var(--foreground);
-  border-color: var(--border);
+  border-color: var(--nav-border, var(--border));
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: var(--surface);
-  border-color: var(--muted);
+  background: var(--promo, var(--page));
+  border-color: var(--nav-border, var(--border));
 }
 
-/* 고치기 등 — 파란 테두리 */
+/* 고치기 등 — 주황 글자, 흰 면 */
 .btn-outline-primary {
   background: var(--canvas);
-  color: var(--weak-fg);
-  border-color: var(--primary);
+  color: var(--primary);
+  border-color: var(--nav-border, var(--border));
 }
 
 .btn-outline-primary:hover:not(:disabled) {
-  background: var(--weak-bg);
+  background: var(--promo, var(--page));
 }
 
-/* 지우기 — 빨간 테두리 (채움 없이 형태 통일) */
+/* 지우기 */
 .btn-outline-danger,
 .btn-danger {
   background: var(--canvas);

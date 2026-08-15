@@ -1,0 +1,65 @@
+/* write.css — 기타 메뉴 API 키 + 보정 팝업 */
+.top-keys {
+  position: relative;
+}
+
+.top-keys > summary {
+  list-style: none;
+}
+
+.top-keys > summary::-webkit-details-marker {
+  display: none;
+}
+
+.top-keys-fields {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 40;
+  min-width: 16rem;
+  max-width: min(22rem, 92vw);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--canvas);
+  color: var(--foreground);
+  border: var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.top-keys-fields .field {
+  min-width: 0;
+  width: 100%;
+}
+
+.top-keys-fields input,
+.top-keys-fields select {
+  width: 100%;
+}
+
+.wm-correct-from {
+  margin: 0;
+  padding: var(--space-3);
+  max-height: 8rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+  background: var(--page);
+  border: var(--line);
+  border-radius: var(--radius-md, var(--radius));
+}
+
+#btnCorrect:disabled,
+#wmCorrectApply:disabled {
+  opacity: 0.45;
+}
+
+/* showModal 실패 시에도 화면 한가운데 보이게 */
+#wmCorrect[open] {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  z-index: 80;
+}

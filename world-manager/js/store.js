@@ -483,13 +483,24 @@
         );
         return;
       }
+      var headers = { "Content-Type": "application/json" };
+      if (BF._folderEtag) headers["If-Match"] = BF._folderEtag;
       var body = JSON.stringify(BF.biblePayload());
       fetch("/worlds/" + encodeURIComponent(slug), {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         body: body,
       })
         .then(function (res) {
+          var et = res.headers.get("ETag");
+          // 폴더가 화면보다 최신 — 폴더 본문을 다시 받음 (백업 폴더는 안 봄)
+          if (res.status === 412) {
+            return res.json().then(function (data) {
+              if (BF.state.worldSlug !== slug) return;
+              if (et) BF._folderEtag = et;
+              if (BF.applyFolderData) BF.applyFolderData(data, "폴더에 있는 최신 본문으로 맞췄습니다.");
+            });
+          }
           // 서버가 「내용이 갑자기 너무 줄었다」고 거절한 경우 — 화면 데이터가 낡은 것
           if (res.status === 409) {
             BF.setStatus(
@@ -498,6 +509,7 @@
           } else if (!res.ok) {
             BF.setStatus("폴더에 저장하지 못했습니다. 열어보기.bat 서버가 켜져 있는지 확인하세요.");
           } else {
+            if (et) BF._folderEtag = et;
             BF._loadedAliveCount = aliveNow;
           }
         })
@@ -564,7 +576,7 @@
     if (BF.isDeleted(BF.findNode(BF.state.pageId))) BF.state.pageId = null;
     // 평소에는 전부 접힌 상태 (화살표로만 펼침)
     BF.state.expanded = new Set();
-    BF.persist();
+    if (!BF._skipFolderPush) BF.persist();
   };
 
   /** 시드: 내장 스크립트(file://) → fetch(http) 순 */
@@ -577,13 +589,90 @@
     return res.json();
   };
 
-  /** 폴더에 있는 세계관 본문. 서버가 우선, 브라우저 저장은 보조 */
+  /** 폴더에 있는 세계관 본문. 서버가 우선, 브라우저 저장은 보조. backups/ 는 안 읽음 */
   BF.loadWorldData = async function loadWorldData(slug) {
     slug = String(slug || "").trim();
     if (!slug) throw new Error("세계관을 고르세요.");
-    var res = await fetch("/worlds/" + encodeURIComponent(slug));
+    var res = await fetch("/worlds/" + encodeURIComponent(slug), {
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error("세계관 파일을 열지 못했습니다.");
+    var et = res.headers.get("ETag");
+    if (et) BF._folderEtag = et;
     return res.json();
+  };
+
+  BF.applyFolderData = function applyFolderData(data, status) {
+    if (!data || !Array.isArray(data.nodes)) return;
+    var ui = BF.readViewState ? BF.readViewState(BF.state.worldSlug) : null;
+    BF._openingWorld = true;
+    BF._skipFolderPush = true;
+    BF.applyData(data);
+    BF._skipFolderPush = false;
+    BF._openingWorld = false;
+    if (ui && BF.restoreViewState) BF.restoreViewState(ui);
+    if (BF.refreshAll) BF.refreshAll();
+    else if (BF.renderBoard) BF.renderBoard();
+    if (status) BF.setStatus(status);
+  };
+
+  function folderPullBlocked() {
+    var a = document.activeElement;
+    if (a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable)) {
+      return true;
+    }
+    if (BF.state.editingCard) return true;
+    if (BF.state.relFormMode && BF.state.relFormMode !== "idle") return true;
+    return false;
+  }
+
+  BF.pullFolderIfChanged = async function pullFolderIfChanged() {
+    var slug = BF.state.worldSlug;
+    if (!slug || location.protocol === "file:") return;
+    if (BF._openingWorld || BF._pullingFolder || folderPullBlocked()) return;
+    BF._pullingFolder = true;
+    try {
+      var headers = {};
+      if (BF._folderEtag) headers["If-None-Match"] = BF._folderEtag;
+      var res = await fetch("/worlds/" + encodeURIComponent(slug), {
+        headers: headers,
+        cache: "no-store",
+      });
+      if (res.status === 304) return;
+      if (!res.ok) return;
+      var et = res.headers.get("ETag");
+      if (et) BF._folderEtag = et;
+      var data = await res.json();
+      BF.applyFolderData(data);
+    } catch (e) {
+      /* 폴링 실패는 화면을 막지 않음 */
+    } finally {
+      BF._pullingFolder = false;
+    }
+  };
+
+  // ponytail: 2초 폴링. 탭이 많아지면 SSE로 바꾸면 됨
+  BF.startFolderWatch = function startFolderWatch() {
+    BF.stopFolderWatch();
+    if (location.protocol === "file:") return;
+    BF._folderWatch = setInterval(function () {
+      if (BF.pullFolderIfChanged) BF.pullFolderIfChanged();
+    }, 2000);
+    if (!BF._folderWatchFocus) {
+      BF._folderWatchFocus = function () {
+        if (document.visibilityState === "visible" && BF.pullFolderIfChanged) {
+          BF.pullFolderIfChanged();
+        }
+      };
+      document.addEventListener("visibilitychange", BF._folderWatchFocus);
+    }
+  };
+
+  BF.stopFolderWatch = function stopFolderWatch() {
+    if (BF._folderWatch) {
+      clearInterval(BF._folderWatch);
+      BF._folderWatch = null;
+    }
   };
 
 })(window.WorldManager = window.WorldManager || {});

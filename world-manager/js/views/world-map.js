@@ -168,11 +168,12 @@
   BF.openMap = function openMap() {
     BF.state.mapOpen = !BF.state.mapOpen;
     if (BF.state.mapOpen) {
-      BF.state.trashOpen = false;
-      BF.state.pageId = null;
+    BF.state.mapOpen = false;
+    BF.state.pageId = null;
     }
     closePeek();
     BF.renderBoard();
+    if (BF.persist) BF.persist();
     var btn = BF.$("btnMap");
     if (btn) btn.setAttribute("aria-pressed", BF.state.mapOpen ? "true" : "false");
   };

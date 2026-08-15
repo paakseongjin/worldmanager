@@ -194,7 +194,8 @@
   padding: 0 var(--control-pad-x);
   border: var(--line, 1px solid var(--border));
   border-radius: var(--radius-pill);
-  background: var(--canvas);
+  /* 헤더는 --canvas라서, 검색칸은 --page 우물로 구분 */
+  background: var(--page);
   color: var(--foreground);
   font: inherit;
   font-size: var(--text-small);

@@ -334,7 +334,7 @@
   padding: 0 var(--picker-pad);
   border: var(--line, 1px solid var(--border));
   border-radius: var(--radius-pill);
-  background: var(--nt-canvas-soft);
+  background: var(--nt-canvas);
   color: var(--nt-ink);
   font: inherit;
   font-size: var(--text-small);
@@ -942,7 +942,12 @@
 .board-toolbar[data-mode="map"] #btnDeleteModule,
 .board-toolbar[data-mode="map"] #btnBoardAddGroup,
 .board-toolbar[data-mode="map"] #btnBoardNewItem,
-.board-toolbar[data-mode="map"] #btnTrashEmpty {
+.board-toolbar[data-mode="map"] #btnTrashEmpty,
+.board-toolbar[data-mode="write"] #btnEditModule,
+.board-toolbar[data-mode="write"] #btnDeleteModule,
+.board-toolbar[data-mode="write"] #btnBoardAddGroup,
+.board-toolbar[data-mode="write"] #btnBoardNewItem,
+.board-toolbar[data-mode="write"] #btnTrashEmpty {
   display: none !important;
 }
 
@@ -1550,16 +1555,16 @@
 .nt-dot.nt-tint-cream { background: var(--nt-ink-faint); }
 .nt-dot.nt-tint-gray { background: var(--nt-ink-faint); }
 
-/* 다크: 파스텔 카드도 어두운 톤으로 (눈부심 방지) */
+/* 다크: 카드 틴트도 회색. 주황 계열 배경 금지 */
 [data-theme="dark"] .board-body {
-  --nt-peach: #3a3028;
-  --nt-rose: #3a2a32;
-  --nt-mint: #26362e;
-  --nt-lavender: #2e2a38;
-  --nt-sky: #263440;
-  --nt-yellow: #35301f;
-  --nt-cream: #322f28;
-  --nt-gray: #2a2830;
+  --nt-peach: #333333;
+  --nt-rose: #353232;
+  --nt-mint: #323532;
+  --nt-lavender: #343338;
+  --nt-sky: #323538;
+  --nt-yellow: #353532;
+  --nt-cream: #2e2e2e;
+  --nt-gray: #2a2a2a;
   --nt-shadow: rgba(0, 0, 0, 0.28) 0 1px 2px;
   --nt-shadow-hover: rgba(0, 0, 0, 0.42) 0 4px 12px;
 }

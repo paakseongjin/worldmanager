@@ -8,25 +8,27 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  /* Surfaces — 순백 대신 따뜻한 종이톤(눈 피로↓) */
-  --page: #f1efe9;
-  --canvas: #f7f5f0;
-  --surface: #e8e4dc;
-  --foreground: #2c2a26;
-  --body: #5a564f;
-  --muted: #827c73;
-  --border: #d5d0c6;
+  /* LikeLion DESIGN.md — page=promo 마당, canvas=흰 카드, hairline, 주황은 강조만 */
+  --page: #fcf4ee;
+  --canvas: #ffffff;
+  --surface: #ffffff;
+  --foreground: #222222;
+  --body: #737373;
+  --muted: #737373;
+  --border: #e5e5e5;
+  --nav-border: #d4d4d4;
+  --promo: #fcf4ee;
   --line-w: 1px;
   --line: var(--line-w) solid var(--border);
   --line-primary: var(--line-w) solid var(--primary);
   --line-danger: var(--line-w) solid var(--danger-line);
 
-  /* 채도·대비를 살짝 낮춘 파랑 */
-  --primary: #3d7ec4;
-  --primary-hover: #2f6eb0;
-  --on-primary: #f7f5f0;
-  --weak-bg: #dde8f4;
-  --weak-fg: #2a5f9a;
+  /* 강조 — DESIGN.md #ff6000 (검색·주요 행동) */
+  --primary: #ff6000;
+  --primary-hover: color-mix(in srgb, #ff6000 82%, #222222);
+  --on-primary: #ffffff;
+  --weak-bg: #fcf4ee;
+  --weak-fg: #222222;
 
   --danger: #c45b5f;
   --ok-bg: #e0efe6;
@@ -56,7 +58,7 @@
   /* Radius — 동심원: outer ≈ inner + padding */
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 16px;
   --radius-pill: 9999px;
   --radius-btn-sm: 8px;
   --radius-btn-md: 8px;
@@ -188,28 +190,30 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* Surfaces — 순흑·순백 금지, 따뜻한 차콜(눈부심↓) */
-  --page: #16151a;
-  --canvas: #1e1d24;
-  --surface: #2a2830;
-  --foreground: #e2e0d9;
-  --body: #a8a49c;
-  --muted: #7d7972;
-  --border: #35333c;
+  /* 다크 배경은 회색만. 주황은 --primary 강조에만 */
+  --page: #121212;
+  --canvas: #1e1e1e;
+  --surface: #2a2a2a;
+  --foreground: #f5f5f5;
+  --body: #c4c4c4;
+  --muted: #a3a3a3;
+  --border: #2e2e2e;
+  --nav-border: #3d3d3d;
+  --promo: #2a2a2a;
 
-  --primary: #6b9fd4;
-  --primary-hover: #84b0dc;
-  --on-primary: #12111a;
-  --weak-bg: #243142;
-  --weak-fg: #a8c6e8;
+  --primary: #ff6000;
+  --primary-hover: color-mix(in srgb, #ff6000 78%, #ffffff);
+  --on-primary: #ffffff;
+  --weak-bg: #2a2a2a;
+  --weak-fg: #f5f5f5;
 
-  --danger: #d48484;
-  --ok-bg: #1c2a22;
+  --danger: #e07070;
+  --ok-bg: #1f1f1f;
   --ok-fg: #8fbfa0;
-  --warn-bg: #2c261a;
-  --warn-fg: #d4b06a;
-  --danger-bg: #2c1e20;
-  --danger-line: #5c3a3e;
+  --warn-bg: #2a2a2a;
+  --warn-fg: #d4d4d4;
+  --danger-bg: #2a2222;
+  --danger-line: #4a3a3a;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -517,7 +521,8 @@ p {
   padding: 0 var(--control-pad-x);
   border: var(--line, 1px solid var(--border));
   border-radius: var(--radius-pill);
-  background: var(--canvas);
+  /* 헤더는 --canvas라서, 검색칸은 --page 우물로 구분 */
+  background: var(--page);
   color: var(--foreground);
   font: inherit;
   font-size: var(--text-small);
@@ -610,6 +615,7 @@ p {
   box-sizing: border-box;
   border: var(--line, 1px solid var(--border));
   border-radius: var(--control-radius, var(--radius-md));
+  /* 마당(--page) 위에서는 흰/밝은 패널로 칸이 떠 보이게 */
   background-color: var(--canvas);
   color: var(--foreground);
   font: inherit;
@@ -715,6 +721,10 @@ input[type="search"] {
   cursor: not-allowed;
 }
 
+.btn[hidden] {
+  display: none !important;
+}
+
 .btn:focus,
 .btn:focus-visible {
   outline: none;
@@ -744,41 +754,42 @@ input[type="search"] {
   border-color: var(--primary-hover);
 }
 
-/* 보조·도구 — 옅은 배경 */
+/* 보조·도구 — 프로모 타일 면 */
 .btn-weak {
   background: var(--weak-bg);
   color: var(--weak-fg);
-  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+  border-color: var(--weak-bg);
 }
 
 .btn-weak:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--weak-bg) 70%, var(--surface));
+  background: color-mix(in srgb, var(--weak-bg) 70%, var(--canvas));
+  border-color: color-mix(in srgb, var(--weak-bg) 70%, var(--canvas));
 }
 
-/* 일반 보조 — 테두리만 */
+/* 일반 보조 — 계정 필처럼 흰 면 + 가는 테두리 */
 .btn-outline {
   background: var(--canvas);
   color: var(--foreground);
-  border-color: var(--border);
+  border-color: var(--nav-border, var(--border));
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: var(--surface);
-  border-color: var(--muted);
+  background: var(--promo, var(--page));
+  border-color: var(--nav-border, var(--border));
 }
 
-/* 고치기 등 — 파란 테두리 */
+/* 고치기 등 — 주황 글자, 흰 면 */
 .btn-outline-primary {
   background: var(--canvas);
-  color: var(--weak-fg);
-  border-color: var(--primary);
+  color: var(--primary);
+  border-color: var(--nav-border, var(--border));
 }
 
 .btn-outline-primary:hover:not(:disabled) {
-  background: var(--weak-bg);
+  background: var(--promo, var(--page));
 }
 
-/* 지우기 — 빨간 테두리 (채움 없이 형태 통일) */
+/* 지우기 */
 .btn-outline-danger,
 .btn-danger {
   background: var(--canvas);
@@ -1158,7 +1169,7 @@ input[type="search"] {
   padding: 0 var(--picker-pad);
   border: var(--line, 1px solid var(--border));
   border-radius: var(--radius-pill);
-  background: var(--nt-canvas-soft);
+  background: var(--nt-canvas);
   color: var(--nt-ink);
   font: inherit;
   font-size: var(--text-small);
@@ -1766,7 +1777,12 @@ input[type="search"] {
 .board-toolbar[data-mode="map"] #btnDeleteModule,
 .board-toolbar[data-mode="map"] #btnBoardAddGroup,
 .board-toolbar[data-mode="map"] #btnBoardNewItem,
-.board-toolbar[data-mode="map"] #btnTrashEmpty {
+.board-toolbar[data-mode="map"] #btnTrashEmpty,
+.board-toolbar[data-mode="write"] #btnEditModule,
+.board-toolbar[data-mode="write"] #btnDeleteModule,
+.board-toolbar[data-mode="write"] #btnBoardAddGroup,
+.board-toolbar[data-mode="write"] #btnBoardNewItem,
+.board-toolbar[data-mode="write"] #btnTrashEmpty {
   display: none !important;
 }
 
@@ -2374,16 +2390,16 @@ input[type="search"] {
 .nt-dot.nt-tint-cream { background: var(--nt-ink-faint); }
 .nt-dot.nt-tint-gray { background: var(--nt-ink-faint); }
 
-/* 다크: 파스텔 카드도 어두운 톤으로 (눈부심 방지) */
+/* 다크: 카드 틴트도 회색. 주황 계열 배경 금지 */
 [data-theme="dark"] .board-body {
-  --nt-peach: #3a3028;
-  --nt-rose: #3a2a32;
-  --nt-mint: #26362e;
-  --nt-lavender: #2e2a38;
-  --nt-sky: #263440;
-  --nt-yellow: #35301f;
-  --nt-cream: #322f28;
-  --nt-gray: #2a2830;
+  --nt-peach: #333333;
+  --nt-rose: #353232;
+  --nt-mint: #323532;
+  --nt-lavender: #343338;
+  --nt-sky: #323538;
+  --nt-yellow: #353532;
+  --nt-cream: #2e2e2e;
+  --nt-gray: #2a2a2a;
   --nt-shadow: rgba(0, 0, 0, 0.28) 0 1px 2px;
   --nt-shadow-hover: rgba(0, 0, 0, 0.42) 0 4px 12px;
 }
@@ -2726,5 +2742,72 @@ input[type="search"] {
 
 .wm-canon-select {
   max-width: 11rem;
+}
+
+/* ===== write.css ===== */
+/* write.css — 기타 메뉴 API 키 + 보정 팝업 */
+.top-keys {
+  position: relative;
+}
+
+.top-keys > summary {
+  list-style: none;
+}
+
+.top-keys > summary::-webkit-details-marker {
+  display: none;
+}
+
+.top-keys-fields {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 40;
+  min-width: 16rem;
+  max-width: min(22rem, 92vw);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--canvas);
+  color: var(--foreground);
+  border: var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.top-keys-fields .field {
+  min-width: 0;
+  width: 100%;
+}
+
+.top-keys-fields input,
+.top-keys-fields select {
+  width: 100%;
+}
+
+.wm-correct-from {
+  margin: 0;
+  padding: var(--space-3);
+  max-height: 8rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+  background: var(--page);
+  border: var(--line);
+  border-radius: var(--radius-md, var(--radius));
+}
+
+#btnCorrect:disabled,
+#wmCorrectApply:disabled {
+  opacity: 0.45;
+}
+
+/* showModal 실패 시에도 화면 한가운데 보이게 */
+#wmCorrect[open] {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  z-index: 80;
 }
 
